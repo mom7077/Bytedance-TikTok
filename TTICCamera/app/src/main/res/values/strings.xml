@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TT-IC Camera</string>
+    <string name="preview_placeholder">预览占位</string>
+    <string name="album_tab_all">全部</string>
+    <string name="album_tab_folder">文件夹</string>
+    <string name="album_empty">暂无图片，检查相册权限或添加图片</string>
+    <string name="album_folder_empty">当前文件夹暂无图片</string>
+    <string name="album_permission_request">去授权</string>
+    <string name="album_open_settings">去设置</string>
+    <string name="album_folder_hint">按文件夹查看，选择后下方展示缩略图</string>
+    <string name="album_select_folder">选择文件夹</string>
+    <string name="album_camera">拍照</string>
+    <string name="album_no_camera">当前设备无可用相机</string>
+    <string name="album_permission_denied">相册权限未授予</string>
+    <string name="album_camera_permission_denied">相机权限被拒绝</string>
+    <string name="editor_placeholder">编辑器画布占位</string>
+    <string name="editor_no_image">未找到图片</string>
+    <string name="preview_to_editor">进入编辑</string>
+    <string name="btn_undo">撤销</string>
+    <string name="btn_redo">重做</string>
+    <string name="btn_apply_changes">应用</string>
+    <string name="tool_adjust">调节</string>
+    <string name="tool_rotate">旋转/翻转</string>
+    <string name="tool_crop">裁剪</string>
+    <string name="tool_text">文字</string>
+    <string name="label_brightness">亮度 (-100 ~ 100)</string>
+    <string name="label_contrast">对比度 (-50 ~ 150)</string>
+    <string name="btn_reset">重置</string>
+    <string name="btn_rotate_left">90° 逆时针</string>
+    <string name="btn_rotate_right">90° 顺时针</string>
+    <string name="btn_rotate_180">180° 旋转</string>
+    <string name="btn_flip_h">水平翻转</string>
+    <string name="btn_flip_v">垂直翻转</string>
+    <string name="label_crop_ratio">选择裁剪比例（中心裁剪）</string>
+    <string name="crop_free">自由</string>
+    <string name="btn_apply_crop">应用裁剪</string>
+    <string name="text_hint">输入文字（支持多行）</string>
+    <string name="text_font">字体</string>
+    <string name="text_size">字号 12-36</string>
+    <string name="text_alpha">透明度 50%-100%</string>
+    <string name="text_rotation">文字旋转 0-360°</string>
+    <string name="btn_add_text">添加文字占位</string>
+    <string name="btn_apply_text">应用文字到画布</string>
+</resources>
