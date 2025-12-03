@@ -7,6 +7,7 @@ sealed class EditorOperation {
     data class Rotate(val degrees: Int) : EditorOperation()
     data class Flip(val horizontal: Boolean) : EditorOperation()
     data class Crop(val ratioWidth: Int, val ratioHeight: Int) : EditorOperation()
+    data class CropRect(val left: Int, val top: Int, val right: Int, val bottom: Int) : EditorOperation()
     data class Text(val overlay: OverlayText) : EditorOperation()
 }
 

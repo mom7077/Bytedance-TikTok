@@ -23,6 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <com.ttic.camera.ui.widgets.CropOverlayView
+            android:id="@+id/cropOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
     </FrameLayout>
 
     <LinearLayout
@@ -203,6 +209,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_crop_ratio" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/crop_drag_hint"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_marginTop="4dp" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupCrop"
@@ -338,6 +350,26 @@
                     android:id="@+id/chipColorGreen"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:text="绿" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipColorYellow"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="黄" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipColorCyan"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="青" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipColorMagenta"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="紫" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipColorOrange"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="橙" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipColorGray"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="灰" />
             </com.google.android.material.chip.ChipGroup>
 
             <SeekBar

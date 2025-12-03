@@ -66,6 +66,8 @@ class AlbumFragment : Fragment() {
                 openEditor(it)
                 pendingCameraUri = null
             }
+        } else {
+            Toast.makeText(requireContext(), R.string.album_camera_failed, Toast.LENGTH_SHORT).show()
         }
     }
 

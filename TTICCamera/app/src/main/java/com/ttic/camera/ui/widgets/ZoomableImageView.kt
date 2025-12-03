@@ -2,6 +2,7 @@ package com.ttic.camera.ui.widgets
 
 import android.content.Context
 import android.graphics.Matrix
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -46,6 +47,24 @@ class ZoomableImageView @JvmOverloads constructor(
         matrixInternal.postScale(scaleFactor, scaleFactor, width / 2f, height / 2f)
         matrixInternal.postTranslate(translateX, translateY)
         imageMatrix = matrixInternal
+    }
+
+    /**
+     * Map a rect in view coordinates to drawable coordinates.
+     */
+    fun mapViewRectToDrawableRect(viewRect: RectF): RectF? {
+        val drawable = drawable ?: return null
+        val inverse = Matrix()
+        if (!imageMatrix.invert(inverse)) return null
+        val rect = RectF(viewRect)
+        inverse.mapRect(rect)
+        val dw = drawable.intrinsicWidth.toFloat()
+        val dh = drawable.intrinsicHeight.toFloat()
+        rect.left = rect.left.coerceIn(0f, dw)
+        rect.top = rect.top.coerceIn(0f, dh)
+        rect.right = rect.right.coerceIn(rect.left, dw)
+        rect.bottom = rect.bottom.coerceIn(rect.top, dh)
+        return rect
     }
 
     private fun constrainTranslation() {

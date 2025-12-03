@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
+import android.provider.MediaStore
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,8 +22,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.ttic.camera.R
 import com.ttic.camera.databinding.FragmentEditorBinding
 import com.ttic.camera.edit.EditorOperation
+import com.ttic.camera.edit.EditorProcessor
 import com.ttic.camera.ui.widgets.OverlayText
+import com.ttic.camera.ui.widgets.CropOverlayView
+import java.io.OutputStream
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EditorFragment : Fragment() {
 
@@ -65,7 +71,7 @@ class EditorFragment : Fragment() {
         observeState()
 
         binding.btnSavePreview.setOnClickListener {
-            Toast.makeText(requireContext(), R.string.btn_apply_changes, Toast.LENGTH_SHORT).show()
+            saveImageWithWatermark()
         }
     }
 
@@ -78,12 +84,16 @@ class EditorFragment : Fragment() {
     }
 
     private fun setupToolTabs() {
-        binding.groupTools.addOnButtonCheckedListener { group, checkedId, isChecked ->
+        binding.groupTools.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
             binding.panelAdjust.isVisible = checkedId == binding.btnToolAdjust.id
             binding.panelRotate.isVisible = checkedId == binding.btnToolRotate.id
             binding.panelCrop.isVisible = checkedId == binding.btnToolCrop.id
             binding.panelText.isVisible = checkedId == binding.btnToolText.id
+            binding.cropOverlay.isVisible = checkedId == binding.btnToolCrop.id
+            if (checkedId != binding.btnToolCrop.id) {
+                binding.cropOverlay.visibility = View.GONE
+            }
         }
         binding.groupTools.check(binding.btnToolAdjust.id)
     }
@@ -95,8 +105,12 @@ class EditorFragment : Fragment() {
                 val contrast = binding.seekContrast.progress - 50
                 viewModel.updateAdjust(brightness, contrast)
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                viewModel.beginAdjustSession()
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                viewModel.endAdjustSession()
+            }
         })
         binding.seekContrast.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -104,8 +118,12 @@ class EditorFragment : Fragment() {
                 val contrast = progress - 50
                 viewModel.updateAdjust(brightness, contrast)
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                viewModel.beginAdjustSession()
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                viewModel.endAdjustSession()
+            }
         })
         binding.btnResetAdjust.setOnClickListener {
             binding.seekBrightness.progress = 100
@@ -133,32 +151,50 @@ class EditorFragment : Fragment() {
     }
 
     private fun setupCropControls() {
+        binding.cropOverlay.resetFreeform()
         binding.btnApplyCrop.setOnClickListener {
-            val ratio = when {
-                binding.chipCrop1to1.isChecked -> 1 to 1
-                binding.chipCrop4to3.isChecked -> 4 to 3
-                binding.chipCrop16to9.isChecked -> 16 to 9
-                binding.chipCrop3to4.isChecked -> 3 to 4
-                binding.chipCrop9to16.isChecked -> 9 to 16
-                else -> null
+            val viewRect = binding.cropOverlay.getRect()
+            val drawableRect = binding.ivEditor.mapViewRectToDrawableRect(viewRect)
+            if (drawableRect == null) {
+                Toast.makeText(requireContext(), R.string.editor_no_image, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            ratio?.let {
-                viewModel.applyOperation(EditorOperation.Crop(it.first, it.second))
+            val cropRect = android.graphics.Rect(
+                drawableRect.left.toInt(),
+                drawableRect.top.toInt(),
+                drawableRect.right.toInt(),
+                drawableRect.bottom.toInt()
+            )
+            viewModel.applyOperation(EditorOperation.CropRect(cropRect.left, cropRect.top, cropRect.right, cropRect.bottom))
+        }
+
+        val ratioHandler: (Int?, Int?) -> Unit = { w, h ->
+            if (w == null || h == null) {
+                binding.cropOverlay.resetFreeform()
+            } else {
+                binding.cropOverlay.setAspectRatio(w, h)
             }
         }
+        binding.chipCropFree.setOnClickListener { ratioHandler(null, null) }
+        binding.chipCrop1to1.setOnClickListener { ratioHandler(1, 1) }
+        binding.chipCrop4to3.setOnClickListener { ratioHandler(4, 3) }
+        binding.chipCrop16to9.setOnClickListener { ratioHandler(16, 9) }
+        binding.chipCrop3to4.setOnClickListener { ratioHandler(3, 4) }
+        binding.chipCrop9to16.setOnClickListener { ratioHandler(9, 16) }
     }
 
     private fun setupTextControls() {
         val fonts = listOf(
             Typeface.SANS_SERIF to "Sans",
             Typeface.SERIF to "Serif",
-            Typeface.MONOSPACE to "Mono"
+            Typeface.MONOSPACE to "Mono",
+            Typeface.DEFAULT_BOLD to "Bold"
         )
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, fonts.map { it.second })
         binding.dropdownFont.setAdapter(adapter)
         binding.dropdownFont.setText(fonts.first().second, false)
         var selectedTypeface = fonts.first().first
-        binding.dropdownFont.setOnItemClickListener { parent, _, position, _ ->
+        binding.dropdownFont.setOnItemClickListener { _, _, position, _ ->
             selectedTypeface = fonts.getOrNull(position)?.first ?: fonts.first().first
         }
 
@@ -209,6 +245,11 @@ class EditorFragment : Fragment() {
             binding.chipColorRed.isChecked -> Color.RED
             binding.chipColorBlue.isChecked -> Color.BLUE
             binding.chipColorGreen.isChecked -> Color.GREEN
+            binding.chipColorYellow.isChecked -> Color.YELLOW
+            binding.chipColorCyan.isChecked -> Color.CYAN
+            binding.chipColorMagenta.isChecked -> Color.MAGENTA
+            binding.chipColorOrange.isChecked -> Color.parseColor("#FFA500")
+            binding.chipColorGray.isChecked -> Color.GRAY
             else -> Color.WHITE
         }
     }
@@ -265,6 +306,49 @@ class EditorFragment : Fragment() {
             }
         }
         return inSampleSize
+    }
+
+    private fun saveImageWithWatermark() {
+        binding.btnSavePreview.isEnabled = false
+        lifecycleScope.launch {
+            val finalBitmap = withContext(Dispatchers.Default) { viewModel.renderFinalBitmap() }
+            if (finalBitmap == null) {
+                Toast.makeText(requireContext(), R.string.editor_no_image, Toast.LENGTH_SHORT).show()
+                binding.btnSavePreview.isEnabled = true
+                return@launch
+            }
+            val watermarked = EditorProcessor.addWatermark(finalBitmap, "训练营", marginPx = 32f)
+            val result = withContext(Dispatchers.IO) { saveToMediaStore(watermarked) }
+            binding.btnSavePreview.isEnabled = true
+            Toast.makeText(requireContext(), result.messageRes, Toast.LENGTH_SHORT).show()
+            if (!finalBitmap.isRecycled) finalBitmap.recycle()
+            if (!watermarked.isRecycled && watermarked != finalBitmap) watermarked.recycle()
+        }
+    }
+
+    private fun saveToMediaStore(bitmap: Bitmap): SaveResult {
+        val resolver = requireContext().contentResolver
+        val fileName = "TTIC_${System.currentTimeMillis()}.jpg"
+        val contentValues = android.content.ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/TTICamera")
+        }
+        return try {
+            val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                ?: return SaveResult.Failed
+            resolver.openOutputStream(uri)?.use { out: OutputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 92, out)
+            } ?: return SaveResult.Failed
+            SaveResult.Success
+        } catch (e: Exception) {
+            SaveResult.Failed
+        }
+    }
+
+    private enum class SaveResult(val messageRes: Int) {
+        Success(R.string.save_success),
+        Failed(R.string.save_failed)
     }
 
     override fun onDestroyView() {

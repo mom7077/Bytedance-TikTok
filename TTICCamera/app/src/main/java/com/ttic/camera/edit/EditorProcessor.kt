@@ -21,6 +21,7 @@ object EditorProcessor {
                 is EditorOperation.Rotate -> rotate(result, op.degrees)
                 is EditorOperation.Flip -> flip(result, op.horizontal)
                 is EditorOperation.Crop -> cropCenter(result, op.ratioWidth, op.ratioHeight)
+                is EditorOperation.CropRect -> cropRect(result, op.left, op.top, op.right, op.bottom)
                 is EditorOperation.Text -> drawText(result, op.overlay)
             }
             if (processed !== result) {
@@ -104,6 +105,31 @@ object EditorProcessor {
             canvas.drawText(line, 0f, y, paint)
         }
         canvas.restore()
+        return result
+    }
+
+    private fun cropRect(src: Bitmap, left: Int, top: Int, right: Int, bottom: Int): Bitmap {
+        val safeLeft = left.coerceIn(0, src.width - 1)
+        val safeTop = top.coerceIn(0, src.height - 1)
+        val safeRight = right.coerceIn(safeLeft + 1, src.width)
+        val safeBottom = bottom.coerceIn(safeTop + 1, src.height)
+        return Bitmap.createBitmap(src, safeLeft, safeTop, safeRight - safeLeft, safeBottom - safeTop)
+    }
+
+    fun addWatermark(src: Bitmap, text: String, marginPx: Float = 32f): Bitmap {
+        val result = src.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(result)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = 0xCCFFFFFF.toInt()
+            textSize = result.densityScale() * 16f * src.width.coerceAtMost(src.height) / 800f
+            textAlign = Paint.Align.RIGHT
+            setShadowLayer(4f, 1f, 1f, 0x66000000)
+        }
+        val bounds = android.graphics.Rect()
+        paint.getTextBounds(text, 0, text.length, bounds)
+        val x = result.width - marginPx
+        val y = result.height - marginPx
+        canvas.drawText(text, x, y, paint)
         return result
     }
 

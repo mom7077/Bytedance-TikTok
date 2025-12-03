@@ -24,6 +24,7 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
     private var renderJob: Job? = null
     private val undoStack = ArrayDeque<List<EditorOperation>>()
     private val redoStack = ArrayDeque<List<EditorOperation>>()
+    private var adjustSessionStarted = false
 
     fun setBaseBitmap(bitmap: Bitmap) {
         baseBitmap = bitmap
@@ -43,6 +44,17 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         val newOps = filtered + EditorOperation.Adjust(brightness, contrast)
         _uiState.update { it.copy(operations = newOps, brightness = brightness, contrast = contrast) }
         render()
+    }
+
+    fun beginAdjustSession() {
+        if (!adjustSessionStarted) {
+            undoStack.addLast(_uiState.value.operations.toList())
+            adjustSessionStarted = true
+        }
+    }
+
+    fun endAdjustSession() {
+        adjustSessionStarted = false
     }
 
     fun applyOperation(op: EditorOperation, pushHistory: Boolean = true) {
@@ -96,6 +108,14 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         val ops = _uiState.value.operations.filterNot { it is EditorOperation.Adjust }
         _uiState.update { it.copy(operations = ops, brightness = 0, contrast = 0) }
         render()
+    }
+
+    suspend fun renderFinalBitmap(): Bitmap? {
+        val base = baseBitmap ?: return null
+        val operations = _uiState.value.operations
+        return kotlinx.coroutines.withContext(Dispatchers.Default) {
+            EditorProcessor.applyOperations(base, operations)
+        }
     }
 
     private fun render() {

@@ -14,12 +14,13 @@
     <string name="album_no_camera">当前设备无可用相机</string>
     <string name="album_permission_denied">相册权限未授予</string>
     <string name="album_camera_permission_denied">相机权限被拒绝</string>
+    <string name="album_camera_failed">拍照失败，请重试</string>
     <string name="editor_placeholder">编辑器画布占位</string>
     <string name="editor_no_image">未找到图片</string>
     <string name="preview_to_editor">进入编辑</string>
     <string name="btn_undo">撤销</string>
     <string name="btn_redo">重做</string>
-    <string name="btn_apply_changes">应用</string>
+    <string name="btn_apply_changes">保存</string>
     <string name="tool_adjust">调节</string>
     <string name="tool_rotate">旋转/翻转</string>
     <string name="tool_crop">裁剪</string>
@@ -35,6 +36,7 @@
     <string name="label_crop_ratio">选择裁剪比例（中心裁剪）</string>
     <string name="crop_free">自由</string>
     <string name="btn_apply_crop">应用裁剪</string>
+    <string name="crop_drag_hint">拖动裁剪框或角点调整</string>
     <string name="text_hint">输入文字（支持多行）</string>
     <string name="text_font">字体</string>
     <string name="text_size">字号 12-36</string>
@@ -42,4 +44,6 @@
     <string name="text_rotation">文字旋转 0-360°</string>
     <string name="btn_add_text">添加文字占位</string>
     <string name="btn_apply_text">应用文字到画布</string>
+    <string name="save_success">保存成功</string>
+    <string name="save_failed">保存失败，请检查空间或权限</string>
 </resources>
