@@ -225,27 +225,39 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCropFree"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/crop_free"
                     android:checked="true" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCrop1to1"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="1:1" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCrop4to3"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="4:3" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCrop16to9"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="16:9" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCrop3to4"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="3:4" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCrop9to16"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="9:16" />
             </com.google.android.material.chip.ChipGroup>
 
@@ -332,43 +344,63 @@
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorWhite"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="白"
                     android:checked="true" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorBlack"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="黑" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorRed"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="红" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorBlue"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="蓝" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorGreen"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="绿" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorYellow"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="黄" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorCyan"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="青" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorMagenta"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="紫" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorOrange"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="橙" />
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipColorGray"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="灰" />
             </com.google.android.material.chip.ChipGroup>
 
